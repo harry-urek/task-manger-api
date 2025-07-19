@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const { getUserById } = require('../controllers/userController');
 
 
-const authenticateToken = async (req, res, next) => {
+const protect = async (req, res, next) => {
     const token = req.header("Authorization")?.split(" ")[1];
 
     if (!token) {
@@ -24,17 +24,6 @@ const authenticateToken = async (req, res, next) => {
 };
 
 
-const hashPassword = async (req, res, next) => {
-    try {
-        if (!req.body.password) {
-            return res.status(400).json({ message: "Password is required" });
-        }
 
-        req.body.password = await bcrypt.hash(req.body.password, 10);
-        next();
-    } catch (err) {
-        return res.status(500).json({ error: err.message });
-    }
-};
 
-module.exports = { authenticateToken, hashPassword };
+module.exports = { protect };
