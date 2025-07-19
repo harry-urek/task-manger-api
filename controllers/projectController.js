@@ -9,7 +9,7 @@ const createProject = async (req, res) => {
         name,
         description,
         owner: req.user._id,
-        members: [req.user._id], // Owner is a member by default
+        members: [req.user._id],
     });
 
     const createdProject = await project.save();
@@ -20,7 +20,7 @@ const createProject = async (req, res) => {
 
 
 const getProjects = async (req, res) => {
-    // Find projects where the user is a member
+
     const projects = await Project.find({ members: req.user._id }).populate('owner', 'name email');
     res.json(projects);
 };
@@ -33,7 +33,7 @@ const addMemberToProject = async (req, res) => {
         return res.status(404).json({ message: 'Project not found' });
     }
 
-    // Check if the current user is the owner of the project
+
     if (project.owner.toString() !== req.user._id.toString()) {
         return res.status(401).json({ message: 'Not authorized' });
     }
@@ -44,7 +44,7 @@ const addMemberToProject = async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check if user is already a member
+
     if (project.members.includes(userToAdd._id)) {
         return res.status(400).json({ message: 'User is already a member of this project' });
     }
