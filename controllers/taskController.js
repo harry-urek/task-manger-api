@@ -169,8 +169,23 @@ const generateTaskDescription = async (req, res) => {
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const prompt = `Based on the following task title, generate a brief, one-paragraph description for a task management system. Title: "${title}"`;
         const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+
+        if (!result || !result.response || typeof result.response.text !== "function") {
+            return res.status(502).json({ message: "Malformed AI response" });
+        }
+
+        let text;
+        try {
+            text = result.response.text();
+        } catch (err) {
+            console.error("Error extracting text from AI response:", err);
+            return res.status(502).json({ message: "Malformed AI response" });
+        }
+
+        if (!text || typeof text !== "string" || !text.trim()) {
+            return res.status(502).json({ message: "Empty or invalid AI response" });
+        }
+
         res.json({ description: text });
     } catch (error) {
         console.error("AI Generation Error:", error);

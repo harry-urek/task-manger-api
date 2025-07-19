@@ -5,7 +5,7 @@ const {
     getProjects,
     addMemberToProject
 } = require('../controllers/projectController.js');
-const { protect } = require('../middleware/authMiddleware.js');
+const { protect } = require('../middleware/auth.js');
 
 router.route('/').post(protect, createProject).get(protect, getProjects);
 router.route('/:id/members').put(protect, addMemberToProject);

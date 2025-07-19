@@ -9,7 +9,7 @@ const {
     deleteComment,
     generateTaskDescription,
 } = require('../controllers/taskController.js');
-const { protect } = require('../middleware/authMiddleware.js');
+const { protect } = require('../middleware/auth.js');
 
 
 router.post('/generate-description', protect, generateTaskDescription);

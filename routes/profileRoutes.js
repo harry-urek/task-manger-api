@@ -4,7 +4,7 @@ const {
     getUserProfile,
     updateUserProfile, // UPDATED
 } = require('../controllers/userController.js');
-const { protect } = require('../middleware/authMiddleware.js');
+const { protect } = require('../middleware/auth.js');
 
 router
     .route('/profile')
