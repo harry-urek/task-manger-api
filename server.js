@@ -4,11 +4,11 @@ const app = require('./app');
 const http = require('http');
 const dotenv = require('dotenv');
 const { Server } = require("socket.io");
-const connectDB = require('./config/db.js');
+const { ConnectDB } = require('./db/mongoose');
 
 dotenv.config();
 
-connectDB();
+ConnectDB();
 
 const server = http.createServer(app);
 

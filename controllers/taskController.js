@@ -1,5 +1,5 @@
-const Task = require('../models/taskModel.js');
-const Project = require('../models/projectModel.js');
+const Task = require('../model/taskModel');
+const Project = require('../model/projectModel');
 const { GoogleGenerativeAI } = require('@google/generative-ai'); // NEW
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);

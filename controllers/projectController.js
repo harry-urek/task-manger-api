@@ -1,5 +1,5 @@
-const Project = require('../models/projectModel.js');
-const User = require('../models/userModel.js');
+const Project = require('../model/projectModel');
+const User = require('../model/userModel');
 
 
 const createProject = async (req, res) => {
