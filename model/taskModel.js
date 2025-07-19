@@ -34,9 +34,7 @@ const taskSchema = mongoose.Schema(
             ref: 'User',
         },
         comments: [commentSchema],
-        // UPDATED: Added attachments array.
-        // In a real app, you'd use a file handling library like 'multer' to upload files
-        // to a service like AWS S3 and store the URLs here.
+
         attachments: [
             {
                 name: String,

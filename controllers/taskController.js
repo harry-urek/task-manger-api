@@ -2,10 +2,8 @@ const Task = require('../models/taskModel.js');
 const Project = require('../models/projectModel.js');
 const { GoogleGenerativeAI } = require('@google/generative-ai'); // NEW
 
-// NEW: Initialize Generative AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Helper function to emit notifications
 const emitNotification = (req, userId, event, data) => {
     const io = req.app.get('socketio');
     const userSocketId = req.app.get('userSockets')[userId.toString()];
@@ -14,9 +12,6 @@ const emitNotification = (req, userId, event, data) => {
     }
 }
 
-// @desc    Create a task
-// @route   POST /api/tasks
-// @access  Private
 const createTask = async (req, res) => {
     const { title, description, dueDate, projectId, assignedTo } = req.body;
 
@@ -25,7 +20,6 @@ const createTask = async (req, res) => {
         return res.status(401).json({ message: 'Not authorized for this project' });
     }
 
-    // UPDATED: Check if the assigned user is a member of the project
     if (assignedTo && !project.members.includes(assignedTo)) {
         return res.status(400).json({ message: 'Assigned user is not a member of this project' });
     }
@@ -33,7 +27,6 @@ const createTask = async (req, res) => {
     const task = new Task({ title, description, dueDate, project: projectId, assignedTo });
     const createdTask = await task.save();
 
-    // NEW: Real-time notification to assigned user
     if (assignedTo) {
         emitNotification(req, assignedTo, 'task_assigned', {
             message: `You have been assigned a new task: "${title}"`,
@@ -44,9 +37,6 @@ const createTask = async (req, res) => {
     res.status(201).json(createdTask);
 };
 
-// @desc    Get tasks for a project
-// @route   GET /api/tasks/project/:projectId
-// @access  Private
 const getTasksByProject = async (req, res) => {
     const { projectId } = req.params;
     const project = await Project.findById(projectId);
@@ -64,16 +54,13 @@ const getTasksByProject = async (req, res) => {
         const parts = sortBy.split(':');
         sortOptions[parts[0]] = parts[1] === 'desc' ? -1 : 1;
     } else {
-        sortOptions.createdAt = -1; // Default sort
+        sortOptions.createdAt = -1;
     }
 
     const tasks = await Task.find(query).populate('assignedTo', 'name email').sort(sortOptions);
     res.json(tasks);
 };
 
-// NEW: Get tasks assigned to the current user
-// @route   GET /api/tasks/mytasks
-// @access  Private
 const getMyTasks = async (req, res) => {
     const tasks = await Task.find({ assignedTo: req.user._id })
         .populate('project', 'name')
@@ -81,9 +68,7 @@ const getMyTasks = async (req, res) => {
     res.json(tasks);
 };
 
-// @desc    Update a task
-// @route   PUT /api/tasks/:id
-// @access  Private
+
 const updateTask = async (req, res) => {
     const { title, description, status, dueDate, assignedTo } = req.body;
     const task = await Task.findById(req.params.id);
@@ -94,7 +79,6 @@ const updateTask = async (req, res) => {
             return res.status(401).json({ message: 'Not authorized' });
         }
 
-        // UPDATED: Check if newly assigned user is a member
         if (assignedTo && !project.members.includes(assignedTo)) {
             return res.status(400).json({ message: 'Assigned user is not a member ' });
         }
@@ -108,7 +92,6 @@ const updateTask = async (req, res) => {
 
         const updatedTask = await task.save();
 
-        // NEW: Real-time notification on status change or re-assignment
         if (assignedTo && oldAssignedTo?.toString() !== assignedTo.toString()) {
             emitNotification(req, assignedTo, 'task_assigned', {
                 message: `Task "${updatedTask.title}" has been assigned to you.`,
@@ -126,9 +109,6 @@ const updateTask = async (req, res) => {
     }
 };
 
-// @desc    Add comment to a task
-// @route   POST /api/tasks/:id/comments
-// @access  Private
 const addCommentToTask = async (req, res) => {
     const { text } = req.body;
     const task = await Task.findById(req.params.id).populate('project', 'members');
@@ -159,9 +139,6 @@ const addCommentToTask = async (req, res) => {
     }
 };
 
-// NEW: Delete a comment from a task
-// @route   DELETE /api/tasks/:taskId/comments/:commentId
-// @access  Private
 const deleteComment = async (req, res) => {
     const task = await Task.findById(req.params.taskId);
 
@@ -183,9 +160,6 @@ const deleteComment = async (req, res) => {
     }
 };
 
-// NEW: Generate task description using AI
-// @route   POST /api/tasks/generate-description
-// @access  Private
 const generateTaskDescription = async (req, res) => {
     const { title } = req.body;
     if (!title) {
