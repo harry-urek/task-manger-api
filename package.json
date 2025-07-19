@@ -1,6 +1,6 @@
 {
   "name": "task-manger-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": " task tracking and management application that facilitates collaboration and organization within teams or projects.",
   "main": "app.js",
   "scripts": {
@@ -10,6 +10,7 @@
   "author": "harry-urek",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.15.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -19,7 +20,8 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
